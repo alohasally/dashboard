@@ -1,9 +1,27 @@
-import React from "react";
+import React, { useState } from "react";
 import tw from "tailwind-styled-components";
 import "./App.css";
 import Tab from "./components/Tab";
+import Furniture from "./containers/Furniture";
+import Option from "./containers/Option";
+import Visiter from "./containers/Visiter";
+
+type TabItem = {
+  id: number;
+  title: string;
+  content: string;
+};
+
+const tabItems: TabItem[] = [
+  { id: 1, title: "통계", content: "a" },
+  { id: 2, title: "옵션", content: "b" },
+  { id: 3, title: "품목", content: "c" },
+];
 
 function App() {
+  const [selectedTabId, setSelectedTabId] = useState(1);
+  console.log(selectedTabId);
+
   return (
     <div className="App">
       <div className="">
@@ -23,7 +41,27 @@ function App() {
           </span>
           <img className="w-full h-[146px] object-cover" src="./banner.png" />
         </div>
-        <Tab menuName={""} menuNumber={0} />
+        <div className="max-w-[1104px] mx-auto flex justify-between items-center pt-14">
+          {tabItems.map((tabItem) => {
+            return (
+              <Tab
+                key={tabItem.id}
+                tabTitle={tabItem.title}
+                isSelectedTab={tabItem.id === selectedTabId}
+                onClick={() => setSelectedTabId(tabItem.id)}
+              />
+            );
+          })}
+        </div>
+        <div>
+          {selectedTabId === 1 ? (
+            <Visiter />
+          ) : selectedTabId === 2 ? (
+            <Option />
+          ) : (
+            <Furniture />
+          )}
+        </div>
       </div>
     </div>
   );
