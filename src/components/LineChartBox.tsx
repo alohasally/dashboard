@@ -8,26 +8,26 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-// const data = [
-//   {
-//     date: "20230301",
-//     count: 111,
-//   },
-//   {
-//     date: "20230301",
-//     count: 111,
-//   },
-//   {
-//     date: "20230301",
-//     count: 111,
-//   },
-//   {
-//     date: "20230301",
-//     count: 111,
-//   },
-// ];
+const data = [
+  {
+    date: "20230301",
+    count: 111,
+  },
+  {
+    date: "20230301",
+    count: 111,
+  },
+  {
+    date: "20230301",
+    count: 111,
+  },
+  {
+    date: "20230301",
+    count: 111,
+  },
+];
 
-export default function LineChartBox({ data }: { data: any[] }) {
+export default function LineChartBox({ data }: { data: any }) {
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart width={500} height={300} data={data}>
