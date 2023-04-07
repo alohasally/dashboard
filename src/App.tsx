@@ -5,6 +5,7 @@ import Tab from "./components/Tab";
 import Furniture from "./containers/Furniture";
 import Option from "./containers/Option";
 import Visiter from "./containers/Visiter";
+import Footer from "./containers/Footer";
 
 type TabItem = {
   id: number;
@@ -53,7 +54,7 @@ function App() {
             );
           })}
         </div>
-        <div>
+        <div className="pb-14">
           {selectedTabId === 1 ? (
             <Visiter />
           ) : selectedTabId === 2 ? (
@@ -62,6 +63,7 @@ function App() {
             <Furniture />
           )}
         </div>
+        <Footer />
       </div>
     </div>
   );
