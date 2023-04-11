@@ -27,6 +27,8 @@ type VisitorStatResult = {
   [key in number]: number;
 };
 
+type LineChartData = { date: string; count: number };
+
 const Visiter = () => {
   const { data, isLoading } = useSWR<VisitorResItem[]>(
     "http://localhost:3003/api?stat=visitorStatistic",
@@ -41,7 +43,7 @@ const Visiter = () => {
   const [bestYear, setBestYear] = useState("2023");
   const [bestDate, setBestDate] = useState("01");
   const [bestMonth, setBestMonth] = useState("01");
-  const [lineChartData, setLineChartData] = useState([]);
+  const [lineChartData, setLineChartData] = useState<LineChartData[]>([]);
   // 상태관리?
 
   function getTotalVisitor(data: VisitorResItem[]) {
@@ -75,10 +77,23 @@ const Visiter = () => {
     const bestDate = bestDay[0][0].slice(6, 8);
 
     return {
+      result,
       bestYear,
       bestDate,
       bestMonth,
     };
+  }
+
+  function getLineChartData(result: VisitorStatResult): LineChartData[] {
+    //1.result 객체를 배열로 바꾸기
+    let resultArray = Object.entries(result);
+    let resultGraph: LineChartData[] = resultArray.map((item) => ({
+      date: item[0].slice(2),
+      count: item[1],
+    }));
+    console.log(resultGraph);
+
+    return resultGraph;
   }
 
   useEffect(() => {
@@ -88,12 +103,14 @@ const Visiter = () => {
 
     //함수로 밖으로 빼내서 그 함수명만 불러오면 간단하게 할 수 있음
     const total = getTotalVisitor(data);
-    const { bestYear, bestMonth, bestDate } = getBestDates(data);
+    const { result, bestYear, bestMonth, bestDate } = getBestDates(data);
+    const lineChartdata = getLineChartData(result);
 
     setBestYear(bestYear);
     setBestMonth(bestMonth);
     setBestDate(bestDate);
     setCount(total);
+    setLineChartData(lineChartdata);
   }, [data]);
 
   return (
@@ -171,7 +188,7 @@ const Visiter = () => {
             </h1>
           </div>
           <div className="flex justify-center items-center  ">
-            <div className="flex justify-center items-center w-[981px] bg-red-200 h-[348px]">
+            <div className="flex justify-center items-center w-[981px] bg-white h-[348px]">
               <LineChartBox data={lineChartData} />
             </div>
           </div>
