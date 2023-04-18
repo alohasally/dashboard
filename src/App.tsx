@@ -19,6 +19,13 @@ const tabItems: TabItem[] = [
   { id: 3, title: "품목", content: "c" },
 ];
 
+const Navh2 = tw.h2`
+text-[#01353F]
+ font-[RaemianNarae]
+  text-[20px]
+   pl-[24px]
+`;
+
 function App() {
   const [selectedTabId, setSelectedTabId] = useState(1);
   console.log(selectedTabId);
@@ -32,9 +39,7 @@ function App() {
           </a>
         </div>
         <div className="flex items-center bg-[#EDEDED] h-[60px]">
-          <h2 className="text-[#01353F] font-[RaemianNarae] text-[20px] pl-[24px]">
-            라그란데 관리자 페이지
-          </h2>
+          <Navh2>라그란데 관리자 페이지</Navh2>
         </div>
         <div className="w-full relative ">
           <span className="absolute top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 font-[RaemianNarae] text-[24px] text-[#fff]">

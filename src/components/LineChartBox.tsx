@@ -4,6 +4,7 @@ import {
   Line,
   XAxis,
   YAxis,
+  Tooltip,
   CartesianGrid,
   ResponsiveContainer,
 } from "recharts";
@@ -46,6 +47,7 @@ export default function LineChartBox({ data }: { data: any }) {
           fontWeight="thin"
         />
         <YAxis fontSize={11} stroke="#7a7a7a" fontWeight="thin" />
+        <Tooltip />
         <Line
           type="monotone"
           dataKey="count"

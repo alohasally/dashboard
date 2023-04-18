@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import useSWR from "swr";
 import userSWRImmutable from "swr/immutable";
+import BarChartBox from "../components/BarChartBox";
 import LineChartBox from "../components/LineChartBox";
+import PieChartBox from "../components/PieChartBox";
+import { log } from "console";
+import { access } from "fs";
 
 const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
@@ -28,6 +32,8 @@ type VisitorStatResult = {
 };
 
 type LineChartData = { date: string; count: number };
+type BarChartData = { age: string; male: number; female: number };
+type PieChartData = { gender: string; count: number };
 
 const Visiter = () => {
   const { data, isLoading } = useSWR<VisitorResItem[]>(
@@ -44,6 +50,8 @@ const Visiter = () => {
   const [bestDate, setBestDate] = useState("01");
   const [bestMonth, setBestMonth] = useState("01");
   const [lineChartData, setLineChartData] = useState<LineChartData[]>([]);
+  const [barChartData, setBarChartData] = useState<BarChartData[]>([]);
+  const [pieChartData, setpieChartData] = useState<PieChartData[]>([]);
   // 상태관리?
 
   function getTotalVisitor(data: VisitorResItem[]) {
@@ -88,12 +96,105 @@ const Visiter = () => {
     //1.result 객체를 배열로 바꾸기
     let resultArray = Object.entries(result);
     let resultGraph: LineChartData[] = resultArray.map((item) => ({
-      date: item[0].slice(2),
+      date: `${Number(item[0].slice(4, 6))}.${Number(item[0].slice(6, 8))}`,
       count: item[1],
     }));
     console.log(resultGraph);
 
     return resultGraph;
+  }
+
+  const initialResult = {
+    "10": {
+      male: 0,
+      female: 0,
+    },
+    "20": {
+      male: 0,
+      female: 0,
+    },
+    "30": {
+      male: 0,
+      female: 0,
+    },
+    "40": {
+      male: 0,
+      female: 0,
+    },
+    "50": {
+      male: 0,
+      female: 0,
+    },
+    "60": {
+      male: 0,
+      female: 0,
+    },
+  };
+
+  // type VisitorResItem = {
+  //   date: number;
+  //   gender: 1 | 2;
+  //   age: 10 | 20 | 30 | 40 | 50 | 60;
+  //   count: number;
+  // };
+
+  // type BarChartData = {
+  //   age: number;
+  //     man: number;
+  //     woman: number;
+  // };
+
+  function getBarChartData(data: VisitorResItem[]): BarChartData[] {
+    //1. 데이터 배열을 순회하면서 값을 확인하고 담을 객체그릇을 만들어준다.
+    let resultAge = Object.entries(
+      data.reduce<{
+        [key: string]: {
+          male: number;
+          female: number;
+        };
+      }>((acc, item) => {
+        const age = String(item.age);
+        acc[age] = {
+          ...acc[age],
+          ...(item.gender === 1
+            ? { male: (acc[age].male += item.count) }
+            : { female: (acc[age].female += item.count) }),
+        };
+        return acc;
+      }, initialResult)
+    ).map((item) => ({
+      age: item[0],
+      male: item[1].male,
+      female: item[1].female,
+    }));
+    return resultAge;
+    //2. age가 키값이고 man,woman의 값을 가진 객체를 만들어준다.
+    //3. 처음에 키값이 없을 경우에는 값을 그대로 가지고 온다.
+    //4. 키캆이 있을 경우에는 값을 계속 합산한다.
+    //5. 이 객체를 배열로 만들어준다.
+  }
+
+  function getPieChartData(data: VisitorResItem[]): PieChartData[] {
+    let resultGender = Object.entries(
+      data.reduce(
+        (acc, item) => {
+          if (item.gender === 1) {
+            acc.male += item.count;
+          } else {
+            acc.female += item.count;
+          }
+          return acc;
+        },
+        {
+          male: 0,
+          female: 0,
+        }
+      )
+    ).map((item) => ({
+      gender: item[0],
+      count: item[1],
+    }));
+    return resultGender;
   }
 
   useEffect(() => {
@@ -105,12 +206,16 @@ const Visiter = () => {
     const total = getTotalVisitor(data);
     const { result, bestYear, bestMonth, bestDate } = getBestDates(data);
     const lineChartdata = getLineChartData(result);
+    const barChartData = getBarChartData(data);
+    const pieChartData = getPieChartData(data);
 
     setBestYear(bestYear);
     setBestMonth(bestMonth);
     setBestDate(bestDate);
     setCount(total);
     setLineChartData(lineChartdata);
+    setBarChartData(barChartData);
+    setpieChartData(pieChartData);
   }, [data]);
 
   return (
@@ -205,7 +310,9 @@ const Visiter = () => {
               </h1>
             </div>
             <div className="flex-1 justify-center items-center">
-              <div className=" bg-white  h-[348px] ">d</div>
+              <div className=" bg-white  h-[348px] ">
+                <BarChartBox data={barChartData} />
+              </div>
             </div>
           </div>
           <div className="h-[#266px] w-[366px] space-y-4">
@@ -216,7 +323,9 @@ const Visiter = () => {
               </h1>
             </div>
             <div className="flex-1 justify-center items-center">
-              <div className=" bg-white h-[348px]">d</div>
+              <div className=" bg-white h-[348px]">
+                <PieChartBox data={pieChartData} />
+              </div>
             </div>
           </div>
         </div>
